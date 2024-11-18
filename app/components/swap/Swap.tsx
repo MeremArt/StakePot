@@ -1,82 +1,161 @@
 import styles from "./swap.module.css";
 import { useWallet } from "@solana/wallet-adapter-react";
-import {
-  PublicKey,
-  VersionedTransaction,
-  TransactionInstruction,
-  AddressLookupTableAccount,
-  TransactionMessage,
-  Connection,
-} from "@solana/web3.js";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import {
-  PythConnection,
-  getPythProgramKeyForCluster,
-} from "@pythnetwork/client";
-import { useConnection, useNetwork } from "../../wallet/WalletContextProvider";
 
 interface Asset {
   name: string;
   mint: string;
   decimals: number;
+  logo: string;
+  description: string;
+  price: number;
 }
 
 const predefinedAssets: Asset[] = [
-  { name: "EUROB", mint: "", decimals: 9 },
-  { name: "CETES", mint: "", decimals: 6 },
-  { name: "USTRY", mint: "", decimals: 6 },
-  { name: "GILTS", mint: "", decimals: 6 },
+  {
+    name: "EUROB",
+    mint: "",
+    decimals: 9,
+    logo: "https://res.cloudinary.com/dtfvdjvyr/image/upload/v1731924190/stakepot_gqiddq.png",
+    description: "A stablecoin backed by the Euro.",
+    price: 1.12,
+  },
+  {
+    name: "CETES",
+    mint: "",
+    decimals: 6,
+    logo: "https://res.cloudinary.com/dtfvdjvyr/image/upload/v1731924190/stakepot_gqiddq.png",
+    description: "Tokenized Mexican government bonds.",
+    price: 1.05,
+  },
+  {
+    name: "USTRY",
+    mint: "",
+    decimals: 6,
+    logo: "https://res.cloudinary.com/dtfvdjvyr/image/upload/v1731924190/stakepot_gqiddq.png",
+    description: "Stablecoin pegged to the TRY currency.",
+    price: 0.045,
+  },
+  {
+    name: "GILTS",
+    mint: "",
+    decimals: 6,
+    logo: "https://res.cloudinary.com/dtfvdjvyr/image/upload/v1731924190/stakepot_gqiddq.png",
+    description: "UK government bond token.",
+    price: 1.15,
+  },
 ];
 
-const Assets: Asset[] = [{ name: "SNGN", mint: "", decimals: 9 }];
+const receiveAssets: Asset[] = [
+  {
+    name: "SNGN",
+    mint: "",
+    decimals: 6,
+    logo: "https://res.cloudinary.com/dtfvdjvyr/image/upload/v1731924190/stakepot_gqiddq.png",
+    description: "NGN token.",
+    price: 1.15,
+  },
+];
+
+interface CustomSelectProps {
+  options: Asset[];
+  value: Asset;
+  onChange: (asset: Asset) => void;
+  className?: string;
+}
+
+const CustomSelect: React.FC<CustomSelectProps> = ({
+  options,
+  value,
+  onChange,
+  className,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className={styles.selectContainer}>
+      <div className={styles.customSelect}>
+        <div
+          className={styles.selectTrigger}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <div className={styles.selectedOption}>
+            <img
+              src={value.logo}
+              alt={value.name}
+              className={styles.assetLogo}
+            />
+            <div className={styles.assetDetails}>
+              <span className={styles.assetName}>{value.name}</span>
+              <span className={styles.assetDescription}>
+                {value.description}
+              </span>
+            </div>
+          </div>
+        </div>
+        {isOpen && (
+          <div className={styles.optionsList}>
+            {options.map((asset) => (
+              <div
+                key={asset.name}
+                className={`${styles.option} ${
+                  asset.name === value.name ? styles.selected : ""
+                }`}
+                onClick={() => {
+                  onChange(asset);
+                  setIsOpen(false);
+                }}
+              >
+                <img
+                  src={asset.logo}
+                  alt={asset.name}
+                  className={styles.assetLogo}
+                />
+                <div className={styles.assetDetails}>
+                  <span className={styles.assetName}>{asset.name}</span>
+                  <span className={styles.assetDescription}>
+                    {asset.description}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Swap: React.FC = () => {
   const wallet = useWallet();
-  const [payAmount, setPayAmount] = useState<string>(""); // User input for payment
-  const [toAmount, setToAmount] = useState<number>(0); // Calculated receive amount
-  const [selectedPayAsset, setSelectedPayAsset] = useState(predefinedAssets[0]); // Asset user is paying with
-  const [selectedReceiveAsset, setSelectedReceiveAsset] = useState(
-    predefinedAssets[1]
-  ); // Asset user is receiving
-  const [loading, setLoading] = useState(false);
+  const [payAmount, setPayAmount] = useState<string>("");
+  const [toAmount, setToAmount] = useState<number>(0);
+  const [selectedPayAsset, setSelectedPayAsset] = useState<Asset>(
+    predefinedAssets[0]
+  );
+  const [selectedReceiveAsset, setSelectedReceiveAsset] = useState<Asset>(
+    receiveAssets[0]
+  );
+  const [loading, setLoading] = useState<boolean>(false);
 
-  // Handle pay asset change
-  const handlePayAssetChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const asset = predefinedAssets.find((a) => a.name === event.target.value);
-    setSelectedPayAsset(asset || predefinedAssets[0]);
-  };
-
-  // Handle receive asset change
-  const handleReceiveAssetChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const asset = predefinedAssets.find((a) => a.name === event.target.value);
-    setSelectedReceiveAsset(asset || predefinedAssets[1]);
-  };
-
-  // Handle user input for pay amount
   const handlePayAmountChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = event.target.value;
     setPayAmount(value);
-    if (!isNaN(Number(value)) && Number(value) > 0) {
-      // Mock calculation: Example using a 1:1 ratio for simplicity
+
+    const numValue = Number(value);
+    if (!isNaN(numValue) && numValue > 0) {
       const calculatedAmount =
-        (Number(value) * 10 ** selectedPayAsset.decimals) /
-        10 ** selectedReceiveAsset.decimals;
+        (numValue * selectedPayAsset.price) / selectedReceiveAsset.price;
       setToAmount(calculatedAmount);
     } else {
       setToAmount(0);
     }
   };
 
-  // Handle mint button click
   const handleMint = async () => {
     if (!wallet.connected) {
       toast.error("Please connect your wallet first!");
@@ -90,7 +169,6 @@ const Swap: React.FC = () => {
 
     setLoading(true);
     try {
-      // Mock transaction logic
       toast.success(
         `Minting ${toAmount.toFixed(2)} ${selectedReceiveAsset.name}`
       );
@@ -107,69 +185,80 @@ const Swap: React.FC = () => {
     <div className={styles.body}>
       <div className={styles.innerContainer}>
         <div className="flex flex-col gap-1">
-          {" "}
-          <h2 className={styles.mint}>MINT STABLE </h2>{" "}
+          <h2 className={styles.mint}>MINT STABLE</h2>
           <p className={styles.stable}>Mint your favourite stable coin</p>
         </div>
         <div className={styles.inputContainer}>
           <div className={styles.inputContainer}>
             <div className={styles.labels}>You're paying:</div>
-
-            <input
-              type="text"
-              value={payAmount}
-              onChange={handlePayAmountChange}
-              className={styles.inputField}
-              placeholder="Enter amount"
-            />
-            <select
-              id="pay-asset-select"
-              value={selectedPayAsset.name}
+            <div className={styles.inputFieldWrapper}>
+              <input
+                type="text"
+                value={payAmount}
+                onChange={handlePayAmountChange}
+                className={styles.inputField}
+                placeholder="Enter amount"
+              />
+              <span className={styles.usdPrice}>
+                ${(Number(payAmount) * selectedPayAsset.price || 0).toFixed(2)}{" "}
+                USD
+              </span>
+            </div>
+            <CustomSelect
+              options={predefinedAssets}
+              value={selectedPayAsset}
+              onChange={(asset: Asset) => {
+                setSelectedPayAsset(asset);
+                if (payAmount) {
+                  const calculatedAmount =
+                    (Number(payAmount) * asset.price) /
+                    selectedReceiveAsset.price;
+                  setToAmount(calculatedAmount);
+                }
+              }}
               className={styles.selectField}
-            >
-              {predefinedAssets.map((asset) => (
-                <option key={asset.name} value={asset.name}>
-                  {asset.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className={styles.inputContainer}>
-            <div className={styles.labels}>To receive:</div>
-            <input
-              type="number"
-              value={toAmount}
-              className={styles.inputField}
-              readOnly
             />
-            <select
-              id="receive-asset-select"
-              value={selectedReceiveAsset.name}
-              onChange={handleReceiveAssetChange}
-              className={styles.selectField}
+
+            <div className={styles.inputContainer}>
+              <div className={styles.labels}>To receive:</div>
+              <div className={styles.inputFieldWrapper}>
+                <input
+                  type="number"
+                  value={toAmount}
+                  className={styles.inputField}
+                  readOnly
+                />
+              </div>
+              <CustomSelect
+                options={receiveAssets}
+                value={selectedReceiveAsset}
+                onChange={(asset: Asset) => {
+                  setSelectedReceiveAsset(asset);
+                  if (payAmount) {
+                    const calculatedAmount =
+                      (Number(payAmount) * selectedPayAsset.price) /
+                      asset.price;
+                    setToAmount(calculatedAmount);
+                  }
+                }}
+                className={styles.selectField}
+              />
+            </div>
+
+            <button
+              onClick={handleMint}
+              className={styles.button}
+              disabled={!wallet.connected || loading}
             >
-              {" "}
-              {Assets.map((asset) => (
-                <option key={asset.name} value={asset.name}>
-                  {asset.name}
-                </option>
-              ))}
-            </select>
+              {loading
+                ? "Loading..."
+                : !wallet.connected
+                ? "Connect Wallet"
+                : "Mint"}
+            </button>
+
+            <ToastContainer />
           </div>
-
-          <button
-            onClick={handleMint}
-            className={styles.button}
-            disabled={!wallet.connected || loading}
-          >
-            {loading
-              ? "Loading..."
-              : !wallet.connected
-              ? "Connect Wallet"
-              : "Mint"}
-          </button>
-
-          <ToastContainer />
         </div>
       </div>
     </div>

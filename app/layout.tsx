@@ -8,7 +8,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 const inter = Inter({ subsets: ["latin"] });
 import Navbar from "./components/Navbar/Navbar";
 export const metadata: Metadata = {
-  title: "Eventmint",
+  title: "StakePot",
   description: "Where Your Bonds Fill the Pot!",
   openGraph: {
     images: [

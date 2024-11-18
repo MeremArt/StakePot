@@ -46,7 +46,6 @@
 .inputContainer {
   display: flex;
   background: #2e2f42;
-  padding: 20px 20px 26px 20px;
   align-items: flex-start;
   align-self: stretch;
   border-radius: 14px;
@@ -54,7 +53,33 @@
   /* align-items: center; Center the inputs */
   width: 100%; /* Ensure the container takes full width */
 }
+.inputFieldWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.usdPrice {
+  font-size: 14px;
+  color: #777;
+}
+.assetInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
 
+.assetLogo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.assetDescription {
+  font-size: 12px;
+  color: #777;
+  flex: 1;
+}
 .labels {
   color: #c0c0c0;
   font-family: Roboto;
@@ -85,13 +110,26 @@
 }
 
 .inputField {
+  flex: 1;
+}
+.receiveInput {
+  display: flex;
   max-width: 515px;
-  height: 56px;
   padding: 24px;
+  height: 56px;
   border-radius: 16px 16px 0px 0px;
   background: #3f4156;
+  width: -webkit-fill-available;
 }
-
+.inputFieldWrapper {
+  display: flex;
+  max-width: 515px;
+  padding: 24px;
+  height: 56px;
+  border-radius: 16px 16px 0px 0px;
+  background: #3f4156;
+  width: -webkit-fill-available;
+}
 .selectField {
   max-width: 550px;
   border-radius: 0px 0px 16px 16px;
@@ -102,13 +140,13 @@
 .inputField:focus,
 .selectField:focus {
   outline: none;
-  background: #3f4156;
-  box-shadow: 0 0 0 2px #cccccc; /* Or any color that fits your design */
+
+  /* Or any color that fits your design */
 }
 
 .button {
   max-width: 550px;
-  padding: 10px;
+  padding: 20px;
   border-radius: 12px;
   background: linear-gradient(180deg, #ff369a 25%, #ff007f 100%);
   color: white;
@@ -167,4 +205,108 @@
 
 .button-wrapper:hover {
   background-color: #1b1f2e;
+}
+
+.customSelect {
+  position: relative;
+  width: 100%;
+  user-select: none;
+}
+
+.selectContainer {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #4a5568;
+}
+
+.selectTrigger {
+  padding: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.selectTrigger:hover {
+  border-color: #cbd5e0;
+}
+
+.selectedOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.optionsList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-top: 0.25rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.option {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.option:hover {
+  background-color: #f7fafc;
+}
+
+.option.selected {
+  background-color: #edf2f7;
+}
+
+.assetLogo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.assetDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.assetName {
+  font-weight: 500;
+  color: #1a202c;
+}
+
+.assetDescription {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.inputFieldWrapper {
+  margin-bottom: 1rem;
 }
