@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap");
+
 .body {
   display: flex;
   flex-direction: column;
@@ -7,35 +10,65 @@
   margin-top: 50px;
 }
 
+.stable {
+  color: rgba(255, 255, 255, 0.7);
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.mint {
+  color: #fff;
+  font-family: "Roboto";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 1px;
+}
 .innerContainer {
-  width: 600px;
-  background-color: #100f0f;
-  padding: 20px;
-  border-radius: 12px;
-  gap: 25px;
-  border: 1px solid #03e1ff;
+  width: 516px;
+  background: #333546;
+  padding: 30px;
+  border-radius: 24px;
+  gap: 20px;
+  border: 1px solid rgba(255, 192, 223, 0.4);
   color: white;
   display: flex;
+  box-shadow: 0px 0px 64px 0px rgba(0, 0, 0, 0.24);
   flex-direction: column;
+  align-items: flex-start;
 }
-
+.inputCover {
+  background: #2e2f42;
+}
 .inputContainer {
   display: flex;
+  background: #2e2f42;
+  padding: 20px 20px 26px 20px;
+  align-items: flex-start;
+  align-self: stretch;
+  border-radius: 14px;
   flex-direction: column;
   /* align-items: center; Center the inputs */
   width: 100%; /* Ensure the container takes full width */
 }
 
 .labels {
-  font-weight: bold;
-  margin-bottom: 15px;
-  font-size: 20px;
+  color: #c0c0c0;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  padding: 10px;
 }
 
 .inputField,
 .selectField,
 .button {
-  width: 90%; /* Set all to the same width */
+  width: 100%; /* Set all to the same width */
   margin-left: auto; /* These two lines ensure the inputs */
   margin-right: auto; /* and button are centered */
 }
@@ -44,7 +77,7 @@
 .selectField {
   padding: 12px;
   font-size: 16px;
-  background-color: #333;
+  background: #3f4156;
   color: white;
   border: none;
   border-radius: 8px;
@@ -53,25 +86,33 @@
 
 .inputField {
   max-width: 515px;
+  height: 56px;
+  padding: 24px;
+  border-radius: 16px 16px 0px 0px;
+  background: #3f4156;
 }
 
 .selectField {
   max-width: 550px;
+  border-radius: 0px 0px 16px 16px;
+  border-top: 1px solid #6b6e8f;
+  background: #3f4156;
 }
 
 .inputField:focus,
 .selectField:focus {
   outline: none;
+  background: #3f4156;
   box-shadow: 0 0 0 2px #cccccc; /* Or any color that fits your design */
 }
 
 .button {
   max-width: 550px;
   padding: 10px;
-  background-color: #03e1ff;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ff369a 25%, #ff007f 100%);
   color: white;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }

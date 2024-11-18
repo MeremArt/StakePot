@@ -732,77 +732,78 @@ const Swap: React.FC = () => {
   return (
     <div className={styles.body}>
       <div className={styles.innerContainer}>
-        <div className={styles.inputContainer}>
-          <div className={styles.labels}>You're paying</div>
-          <input
-            value={fromAmount}
-            onChange={handleFromValueChange}
-            className={styles.inputField}
-          />
-          <select
-            value={fromAsset.name}
-            onChange={handleFromAssetChange}
-            className={styles.selectField}
-          >
-            {assets.map((asset) => (
-              <option key={asset.mint} value={asset.name}>
-                {asset.name}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col gap-1">
+          {" "}
+          <h2 className={styles.mint}>MINT STABLE </h2>{" "}
+          <p className={styles.stable}>Mint your favourite stable coin</p>
         </div>
         <div className={styles.inputContainer}>
-          <div className={styles.labels}>To receive</div>
-          <input
-            type="number"
-            value={toAmount}
-            className={styles.inputField}
-            readOnly
-          />
-          <select
-            value={toAsset.name}
-            onChange={handleToAssetChange}
-            className={styles.selectField}
-          >
-            {assets.map((asset) => (
-              <option key={asset.mint} value={asset.name}>
-                {asset.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {optimalAmount !== null && (
-          <div className={styles.optimalAmount}>
-            <p className="font-bold text-xl">Best Price from pyth(oracle)</p>{" "}
-            <p>
-              Optimal Amount: {optimalAmount?.toFixed(6)} {fromAsset.name}
-            </p>
-            <p>
-              You will receive: {toAmount?.toFixed(6)} {toAsset.name}
-            </p>
+          <div className={styles.inputContainer}>
+            <div className={styles.labels}>You're paying:</div>
+
+            <input
+              value={fromAmount}
+              onChange={handleFromValueChange}
+              className={styles.inputField}
+            />
+            <select
+              value={fromAsset.name}
+              onChange={handleFromAssetChange}
+              className={styles.selectField}
+            >
+              {assets.map((asset) => (
+                <option key={asset.mint} value={asset.name}>
+                  {asset.name}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
+          <div className={styles.inputContainer}>
+            <div className={styles.labels}>To receive:</div>
+            <input
+              type="number"
+              value={toAmount}
+              className={styles.inputField}
+              readOnly
+            />
+            <select
+              value={toAsset.name}
+              onChange={handleToAssetChange}
+              className={styles.selectField}
+            >
+              {assets.map((asset) => (
+                <option key={asset.mint} value={asset.name}>
+                  {asset.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {optimalAmount !== null && (
+            <div className={styles.optimalAmount}>
+              <p className="font-bold text-xl">Best Price from pyth(oracle)</p>{" "}
+              <p>
+                Optimal Amount: {optimalAmount?.toFixed(6)} {fromAsset.name}
+              </p>
+              <p>
+                You will receive: {toAmount?.toFixed(6)} {toAsset.name}
+              </p>
+            </div>
+          )}
 
-        <button
-          onClick={signAndSendTransaction}
-          className={styles.button}
-          disabled={!wallet.connected || loading}
-        >
-          {loading ? "Loading..." : "Swap"}
-        </button>
-        {/* <div>
-          <p>
-            Original Amount: {fromAmount} {fromAsset.name}
-          </p>
-          <p>
-            Optimal Amount: {optimalAmount?.toFixed(6)} {fromAsset.name}
-          </p>
-          <p>
-            You will receive: {toAmount?.toFixed(6)} {toAsset.name}
-          </p>
-        </div> */}
+          <button
+            onClick={signAndSendTransaction}
+            className={styles.button}
+            disabled={!wallet.connected || loading}
+          >
+            {loading
+              ? "Loading..."
+              : !wallet.connected
+              ? "Connect Wallet"
+              : "Mint"}
+          </button>
 
-        <ToastContainer />
+          <ToastContainer />
+        </div>
       </div>
     </div>
   );
